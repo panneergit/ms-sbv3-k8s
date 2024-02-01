@@ -1,0 +1,18 @@
+package com.in28min.ms.sbv3.ces.dto;
+
+import java.math.BigDecimal;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ExchangeValueDTO {
+	private Long id;
+	private String from;
+	private String to;
+	private BigDecimal exchangeValue;
+	private String environment;
+}

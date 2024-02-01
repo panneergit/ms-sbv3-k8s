@@ -1,0 +1,172 @@
+version: "3.8"
+
+services:
+  conversion-service:
+    build:
+      context: currency-conversion-service
+      dockerfile: src/docker/Dockerfile
+    image: conversion-service
+    container_name: conversion-service
+    tty: true
+    ports: 
+      - 8091:8091
+    environment:
+      - EUREKA.CLIENT.REGISTER-WITH-EUREKA=true
+      - EUREKS.CLIENT.FETCH-REGISTORY=true
+      - EUREKA.CLIENT.SERVICEURL.DEFAULTZONE=http://naming-server:8761/eureka
+      - MANAGEMENT.ZIPKIN.TRACING.ENDPOINT=http://zipkin-server:9411/api/v2/spans
+    depends_on:
+      - naming-server
+      - apigateway-server
+    networks:
+      - currency-network-api
+    deploy:
+      resources:
+        limits:
+          memory: 250M
+
+  exchange-service:
+    build:
+      context: currency-exchange-service
+      dockerfile: src/docker/Dockerfile
+    image: exchange-service
+    container_name: exchange-service-1
+    tty: true
+    ports:
+      - 8081:8081
+    environment:
+      - EUREKA.CLIENT.REGISTER-WITH-EUREKA=true
+      - EUREKS.CLIENT.FETCH-REGISTORY=true
+      - EUREKA.CLIENT.SERVICEURL.DEFAULTZONE=http://naming-server:8761/eureka
+      - MANAGEMENT.ZIPKIN.TRACING.ENDPOINT=http://zipkin-server:9411/api/v2/spans
+    depends_on:
+      - naming-server
+      - apigateway-server
+    networks:
+      - currency-network-api
+    deploy:
+      resources:
+        limits:
+          memory: 250M
+
+  zipkin-server:
+    image: openzipkin/zipkin:latest
+    container_name: openzipkin
+    ports:
+      - 9411:9411
+    restart: always
+    networks:
+      - currency-network-api
+    deploy:
+      resources:
+        limits:
+          memory: 250M
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    networks:
+      - currency-network-api
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+
+  kafka: 
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    ports:
+      - 9092:9092
+      - 29092:29092
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+      - kafka-log:/tmp/kafka-logs
+      - kafka-secrets:/etc/kafka/secrets
+    networks:
+      - currency-network-api
+    deploy:
+      resources:
+        limits: 
+          memory: 1200M
+
+  mysql:
+    build:
+      context: mysql
+      dockerfile: Dockerfile.mysql
+    image: mysql
+    container_name: mysql
+    command: mysqld--character-set-server=utf8mb4 --collection-server=utf8mb4_unicode_ci
+    restart: always
+    security_opt:
+      - seccomp:unconfined
+    healthcheck:
+      test: ["CMD","mysqladmiin","ping","-h","localhost"]
+      timeout: 20s
+      retries: 10
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root123
+      - MYSQL_USER=dbuser
+      - MYSQL_PASSWORD=dbuser123
+    volumes:
+      - mysql-data:/var/lib/mysql/data
+    networks:
+      - currency-network-api
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+  postgres:
+    build: 
+      context: postgres
+      dockerfile: Dockerfile.postgres
+    image: postgres
+    container_name: postgres
+    healthcheck:
+      test: ["CMD","pg_isready","-q","-d","postgres","-U","postgres"]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres@123
+      - ALL_DB_USER=appuser
+      - APP_DB_PASSWORD=appuser@123
+      - APP_DB_NAME=localpstgsdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - currency-network-api
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+volumes:
+  kafka-data:
+  kafka-log:
+  kafka-secrets:
+  mysql-data:
+  postgres-data:
+
+networks:
+  currency-network-api: null

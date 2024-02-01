@@ -1,0 +1,7 @@
+FROM mysql:latest
+
+# Initialize the database user and provide privileges
+#COPY 1_initdb.sql /docker-entrypoint-initdb.d
+
+# Initilize the domain schema
+#COPY user-schema.sql /docker-entrypoint.initdb.d
