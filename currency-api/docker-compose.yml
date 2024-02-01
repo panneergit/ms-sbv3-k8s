@@ -1,12 +1,12 @@
 version: "3.8"
 
 services:
-  conversion-service:
+  currency-conversion:
     build:
-      context: currency-conversion-service
+      context: currency-conversion
       dockerfile: src/docker/Dockerfile
     image: conversion-service
-    container_name: conversion-service
+    container_name: currency-conversion
     tty: true
     ports: 
       - 8091:8091
@@ -25,12 +25,12 @@ services:
         limits:
           memory: 250M
 
-  exchange-service:
+  currency-exchange:
     build:
-      context: currency-exchange-service
+      context: currency-exchange
       dockerfile: src/docker/Dockerfile
     image: exchange-service
-    container_name: exchange-service-1
+    container_name: currency-exchange
     tty: true
     ports:
       - 8081:8081

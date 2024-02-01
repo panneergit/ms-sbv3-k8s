@@ -11,37 +11,16 @@ For further reference, please consider the following sections:
 
 # Currency Exchange Service
 
-http://localhost:8081/exchange-service/exchange-controller/exchangeinfo/welcome
+http://localhost:8081/currency-exchange/exchange-controller/welcome
 
-http://localhost:8081/exchange-service/exchange-controller/exchangeinfo/from/INR/to/USD
+http://localhost:8081/currency-exchange/exchange-controller/exchangeinfo/from/INR/to/USD
 
 
 # Currency Conversion Service
 
-http://localhost:8091/conversion-service/conversion-controller/conversioninfo/welcome
+http://localhost:8091/currency-conversion/conversion-controller/welcome
 
-http://localhost:8091/conversion-service/conversion-controller/conversioninfo/from/INR/to/USD/quantity/555
-
-
-# Eureka
-
-http://localhost:8761/
-
-
-# API Gateway Server
-
-### Currency Exchange Service
-
-http://localhost:8765/exchange-service/exchange-controller/exchangeinfo/welcome
-
-http://localhost:8765/exchange-service/exchange-controller/exchangeinfo/from/INR/to/USD
-
-
-### Currency Conversion Service
-
-http://localhost:8765/conversion-service/conversion-controller/conversioninfo/welcome
-
-http://localhost:8765/conversion-service/conversion-controller/conversioninfo/from/INR/to/USD/quantity/555
+http://localhost:8091/currency-conversion/conversion-controller/conversioninfo/from/INR/to/USD/quantity/555
 
 
 # Docker 
@@ -50,15 +29,6 @@ http://localhost:8765/conversion-service/conversion-controller/conversioninfo/fr
 
 ##### Build all services
 docker-compose --compatibility -f docker-compose.yml up -d --build
-
-##### Build Naming Server
-docker-compose --compatibility -f docker-compose.yml up -d --build naming-server
-
-##### Build Zipkin Server
-docker-compose --compatibility -f docker-compose.yml up -d --build zipkin-server
-
-##### Build API Gateway Server
-docker-compose --compatibility -f docker-compose.yml up -d --build apigateway-server
 
 ##### Build Currency Exchange Service
 docker-compose --compatibility -f docker-compose.yml up -d --build exchange-service

@@ -71,8 +71,8 @@
 	</build>
 	
 	<modules>
-        <module>currency-conversion-service</module>
-        <module>currency-exchange-service</module>
+        <module>currency-conversion</module>
+        <module>currency-exchange</module>
     </modules>
 
 </project>
