@@ -30,7 +30,7 @@ public class CurrencyExchnageService {
 			exchangeValueDTO.setFrom(from);
 			exchangeValueDTO.setTo(to);
 			exchangeValueDTO.setExchangeValue(exchangeObj.get().getExchangeValue());
-			exchangeValueDTO.setEnvironment("Host Name:"+env.getProperty("HOSTNAME")+ " Port No::"+ env.getProperty("local.server.port"));
+			exchangeValueDTO.setEnvironment("Application Version :: 0.0.1-SNAPSHOT "+"  Host Name:"+env.getProperty("HOSTNAME")+ " Port No::"+ env.getProperty("local.server.port"));
 		} else {
 			throw new RuntimeException("Unable to Find data for " + from + " to " + to);
 		}

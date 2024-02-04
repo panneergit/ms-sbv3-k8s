@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kubernetes.io/change-cause: "Initial Deployment"
+  labels:
+    app: currency-exchange
+  name: currency-exchange
+  namespace: default
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: currency-exchange
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: currency-exchange
+    spec:
+      containers:
+        - name: currency-exchange
+          image: panneercts/currency-exchange:0.0.1-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: curr-ex-port
+              protocol: TCP
+              containerPort: 8081
+          resources:
+            limits:
+              cpu: 500m
+              ephemeral-storage: 1Gi
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              ephemeral-storage: 1Gi
+              memory: 2Gi
+          # livenessProbe:
+          #   httpGet:
+          #     path: /currency-exchange/actuator/health/liveness
+          #     port: curr-ex-port
+          #   failureThreshold: 3
+          #   periodSeconds: 3
+          #   successThreshold: 1
+          #   initialDelaySeconds: 55
+          # readinessProbe:
+          #   httpGet:
+          #     path: /currency-exchange/actuator/health/readiness
+          #     port: curr-ex-port
+          #   failureThreshold: 3
+          #   periodSeconds: 3
+          #   successThreshold: 1
+          #   initialDelaySeconds: 55
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: currency-exchange
+  name: currency-exchange
+  namespace: default
+spec:
+  selector:
+    app: currency-exchange
+  sessionAffinity: None
+  type: LoadBalancer
+  ports:
+    - port: 8081
+      protocol: TCP
+      targetPort: 8081
