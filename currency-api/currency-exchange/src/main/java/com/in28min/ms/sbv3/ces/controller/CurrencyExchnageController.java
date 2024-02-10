@@ -1,5 +1,7 @@
 package com.in28min.ms.sbv3.ces.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,11 @@ public class CurrencyExchnageController {
 	@GetMapping("/welcome")
 	public ResponseEntity<String> getWelcomeNote() {
 		return ResponseEntity.ok("Welcome Currency Exchange Service");
+	}
+
+	@GetMapping("/exchangeinfos")
+	public ResponseEntity<List<ExchangeValueDTO>> getAllCurrencyExchangeInfo() {
+		return ResponseEntity.ok(exchnageService.getAllCurrencyExchangeInfo());
 	}
 
 	@GetMapping("/exchangeinfo/from/{from}/to/{to}")
